@@ -155,12 +155,9 @@
             <a href="{{ route('admin.users') }}" class="{{ request()->routeIs('admin.users*') ? 'active' : '' }}">
                 <i class="bi bi-people"></i> Kelola Pengguna
             </a>
-<<<<<<< HEAD
             <a href="{{ route('admin.devices') }}" class="{{ request()->routeIs('admin.devices*') ? 'active' : '' }}">
                 <i class="bi bi-cpu"></i> Kelola Device
             </a>
-=======
->>>>>>> 1a966354809047339de1b44f686874e08c54a24e
             <a href="{{ route('admin.sensor-config') }}" class="{{ request()->routeIs('admin.sensor-config') ? 'active' : '' }}">
                 <i class="bi bi-sliders"></i> Konfigurasi Sensor
             </a>
