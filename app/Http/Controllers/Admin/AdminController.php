@@ -14,42 +14,66 @@ use App\Models\SensorThreshold;
 class AdminController extends Controller
 {
     // ── Dashboard ──────────────────────────────────────────────────────────
-   public function dashboard()
-{
-    $userCount   = User::where('role', 'user')->count();
-    $deviceCount = Device::count();
-    $stats = [
-        'rain_today'     => RainLog::whereDate('created_at', today())->count(),
-        'chlorine_today' => ChlorineLog::whereDate('created_at', today())->count(),
-        'total_users'    => $userCount,
-        'total_devices'  => $deviceCount,
-        'avg_turbidity'  => SensorReading::where('created_at', '>=', now()->subDay())->avg('turbidity_value'),
-    ];
-
-    $latest         = SensorReading::with('device')->latest()->first();
-    $recentReadings = SensorReading::with('device')->latest()->take(10)->get();
-    $devices        = Device::with('user')->latest()->get();
-
-    return view('admin.dashboard', compact('latest', 'stats', 'recentReadings', 'devices'));
-}
-    private string $deviceId = 'ESP32-POOL-001';
-
-    // ── Dashboard ──────────────────────────────────────────────────────────
     public function dashboard()
     {
-        $latest    = SensorReading::latestByDevice($this->deviceId);
-        $userCount = User::where('role', 'user')->count();
+        $userCount   = User::where('role', 'user')->count();
+        $deviceCount = Device::count();
         $stats = [
             'rain_today'     => RainLog::whereDate('created_at', today())->count(),
             'chlorine_today' => ChlorineLog::whereDate('created_at', today())->count(),
             'total_users'    => $userCount,
+            'total_devices'  => $deviceCount,
+            'avg_turbidity'  => SensorReading::where('created_at', '>=', now()->subDay())->avg('turbidity_value'),
+        ];
+
+        $latest         = SensorReading::with('device')->latest()->first();
+        $recentReadings = SensorReading::with('device')->latest()->take(10)->get();
+        $devices        = Device::with('user')->latest()->get();
+
+        return view('admin.dashboard', compact('latest', 'stats', 'recentReadings', 'devices'));
+    }
+
+    // ── Poll Dashboard ─────────────────────────────────────────────────────
+    public function pollDashboard()
+    {
+        $stats = [
+            'rain_today'     => RainLog::whereDate('created_at', today())->count(),
+            'chlorine_today' => ChlorineLog::whereDate('created_at', today())->count(),
             'avg_turbidity'  => SensorReading::where('created_at', '>=', now()->subDay())
                 ->avg('turbidity_value'),
         ];
 
-        $recentReadings = SensorReading::latest()->take(10)->get();
+        $latest         = SensorReading::with('device')->latest()->first();
+        $recentReadings = SensorReading::with('device')->latest()->take(10)->get();
 
-        return view('admin.dashboard', compact('latest', 'stats', 'recentReadings'));
+        return response()->json([
+            'success' => true,
+            'stats'   => [
+                'rain_today'     => $stats['rain_today'],
+                'chlorine_today' => $stats['chlorine_today'],
+                'avg_turbidity'  => $stats['avg_turbidity']
+                    ? number_format($stats['avg_turbidity'], 1)
+                    : null,
+            ],
+            'latest' => $latest ? [
+                'turbidity_value'  => number_format($latest->turbidity_value, 1),
+                'turbidity_label'  => $latest->turbidity_label,
+                'turbidity_color'  => $latest->turbidity_color,
+                'rain_value'       => $latest->rain_value,
+                'rain_detected'    => $latest->rain_detected,
+                'updated_at'       => $latest->created_at->diffForHumans(),
+                'updated_time'     => $latest->created_at->format('H:i:s'),
+            ] : null,
+            'recent_readings' => $recentReadings->map(fn($r) => [
+                'time'            => $r->created_at->format('d/m H:i:s'),
+                'device_id'       => $r->device->device_id ?? '—',
+                'turbidity_value' => number_format($r->turbidity_value, 1),
+                'turbidity_label' => $r->turbidity_label,
+                'turbidity_color' => $r->turbidity_color,
+                'rain_value'      => $r->rain_value,
+                'rain_detected'   => $r->rain_detected,
+            ]),
+        ]);
     }
 
     // ── Rain Logs ──────────────────────────────────────────────────────────
@@ -104,48 +128,7 @@ class AdminController extends Controller
 
         return redirect()->route('admin.devices')->with('success', 'Device berhasil ditambahkan.');
     }
-    public function pollDashboard()
-{
-    $stats = [
-        'rain_today'     => RainLog::whereDate('created_at', today())->count(),
-        'chlorine_today' => ChlorineLog::whereDate('created_at', today())->count(),
-        'avg_turbidity'  => SensorReading::where('created_at', '>=', now()->subDay())
-            ->avg('turbidity_value'),
-    ];
- 
-    $latest         = SensorReading::with('device')->latest()->first();
-    $recentReadings = SensorReading::with('device')->latest()->take(10)->get();
- 
-    return response()->json([
-        'success' => true,
-        'stats'   => [
-            'rain_today'     => $stats['rain_today'],
-            'chlorine_today' => $stats['chlorine_today'],
-            'avg_turbidity'  => $stats['avg_turbidity']
-                ? number_format($stats['avg_turbidity'], 1)
-                : null,
-        ],
-        'latest' => $latest ? [
-            'turbidity_value'  => number_format($latest->turbidity_value, 1),
-            'turbidity_label'  => $latest->turbidity_label,
-            'turbidity_color'  => $latest->turbidity_color,
-            'rain_value'       => $latest->rain_value,
-            'rain_detected'    => $latest->rain_detected,
-            'updated_at'       => $latest->created_at->diffForHumans(),
-            'updated_time'     => $latest->created_at->format('H:i:s'),
-        ] : null,
-        'recent_readings' => $recentReadings->map(fn($r) => [
-            'time'            => $r->created_at->format('d/m H:i:s'),
-            'device_id'       => $r->device->device_id ?? '—',
-            'turbidity_value' => number_format($r->turbidity_value, 1),
-            'turbidity_label' => $r->turbidity_label,
-            'turbidity_color' => $r->turbidity_color,
-            'rain_value'      => $r->rain_value,
-            'rain_detected'   => $r->rain_detected,
-        ]),
-    ]);
-}
- 
+
     public function editDevice(Device $device)
     {
         $users = User::where('role', 'user')->get();
@@ -176,8 +159,7 @@ class AdminController extends Controller
     // ── Kelola User ────────────────────────────────────────────────────────
     public function users()
     {
-        $users = User::where('role', 'user')->withCount('devices')->oldest()->paginate(10);
-        $users = User::where('role', 'user')->latest()->paginate(10);
+        $users = User::where('role', 'user')->withCount('devices')->latest()->paginate(10);
         return view('admin.users.index', compact('users'));
     }
 
@@ -252,10 +234,6 @@ class AdminController extends Controller
             'turbidity_sangat_keruh' => 'required|numeric|min:0',
             'rain_threshold'         => 'required|numeric|min:0',
             'chlorine_amount_ml'     => 'required|numeric|min:0',
-            'turbidity_keruh'       => 'required|numeric|min:0',
-            'turbidity_sangat_keruh' => 'required|numeric|min:0',
-            'rain_threshold'        => 'required|numeric|min:0',
-            'chlorine_amount_ml'    => 'required|numeric|min:0',
         ]);
 
         foreach ($request->only('turbidity_keruh', 'turbidity_sangat_keruh', 'rain_threshold', 'chlorine_amount_ml') as $key => $value) {
@@ -325,6 +303,7 @@ class AdminController extends Controller
             'Content-Disposition' => "attachment; filename=\"$filename\"",
         ]);
     }
+
     // ── API Key ────────────────────────────────────────────────────────────
     public function generateApiKey(Device $device)
     {
@@ -344,5 +323,4 @@ class AdminController extends Controller
         $device->apiKey()->delete();
         return back()->with('success', 'API key berhasil dihapus.');
     }
-}
 }

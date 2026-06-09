@@ -3,7 +3,6 @@
 @section('page-title', 'Riwayat Deteksi Hujan')
 
 @section('content')
-<<<<<<< HEAD
 
 @if(!isset($device))
 <div class="table-card p-5 text-center">
@@ -19,39 +18,23 @@
         <h6 class="mb-0"><i class="bi bi-cloud-rain me-2 text-primary"></i>Log Hujan</h6>
         <form method="GET" class="d-flex gap-2 flex-wrap">
             <input type="hidden" name="device_id" value="{{ $device->id }}">
-=======
-<div class="table-card">
-    <div class="p-3 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2">
-        <h6 class="mb-0"><i class="bi bi-cloud-rain me-2 text-primary"></i>Log Hujan</h6>
-        <form method="GET" class="d-flex gap-2">
->>>>>>> 1a966354809047339de1b44f686874e08c54a24e
             <input type="date" name="date" class="form-control form-control-sm rounded-3"
                 value="{{ request('date') }}" style="width:auto">
             <button class="btn btn-sm btn-primary rounded-3">Filter</button>
             @if(request('date'))
                 <a href="{{ request()->url() }}" class="btn btn-sm btn-outline-secondary rounded-3">Reset</a>
             @endif
-<<<<<<< HEAD
             <a href="{{ route('user.rain-logs.export', request()->only('date', 'device_id')) }}"
                class="btn btn-sm btn-success rounded-3">
                 <i class="bi bi-download me-1"></i>Download CSV
             </a>
         </form>
     </div>
-=======
-        </form>
-    </div>
-
->>>>>>> 1a966354809047339de1b44f686874e08c54a24e
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
             <thead>
                 <tr>
-<<<<<<< HEAD
                     <th>No</th>
-=======
-                    <th>#</th>
->>>>>>> 1a966354809047339de1b44f686874e08c54a24e
                     <th>Waktu</th>
                     <th>Device</th>
                     <th>Nilai ADC</th>
@@ -64,11 +47,7 @@
                 <tr>
                     <td><small class="text-muted">{{ $log->id }}</small></td>
                     <td>{{ $log->created_at->format('d M Y, H:i:s') }}</td>
-<<<<<<< HEAD
                     <td><span class="badge bg-dark rounded-pill">{{ $device->device_id }}</span></td>
-=======
-                    <td><span class="badge bg-dark rounded-pill">{{ $log->device_id }}</span></td>
->>>>>>> 1a966354809047339de1b44f686874e08c54a24e
                     <td><span class="badge bg-primary rounded-pill">{{ $log->rain_value }}</span></td>
                     <td>
                         @if($log->cover_closed)
@@ -89,21 +68,12 @@
             </tbody>
         </table>
     </div>
-<<<<<<< HEAD
     @if(method_exists($logs, 'hasPages') && $logs->hasPages())
-=======
-
-    @if($logs->hasPages())
->>>>>>> 1a966354809047339de1b44f686874e08c54a24e
         <div class="p-3 border-top">
             {{ $logs->withQueryString()->links('pagination::bootstrap-5') }}
         </div>
     @endif
 </div>
-<<<<<<< HEAD
 
 @endif
 @endsection
-=======
-@endsection
->>>>>>> 1a966354809047339de1b44f686874e08c54a24e

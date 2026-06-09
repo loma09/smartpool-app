@@ -1,19 +1,4 @@
-<?php
-namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-
-class AuthController extends Controller
-{
-    public function showLogin()
-    {
-        return view('auth.login');
-    }
-
-    public function login(Request $request)
-    {
-        $credentials = $request->validate([
+validate([
             'email'    => 'required|email',
             'password' => 'required',
         ]);
@@ -24,7 +9,9 @@ class AuthController extends Controller
             $user = Auth::user();
 
             return redirect()->intended(
-                $user->isAdmin() ? route('admin.dashboard') : route('user.dashboard')
+                $user->isAdmin()
+                    ? route('admin.dashboard')
+                    : route('user.dashboard')
             );
         }
 
@@ -41,33 +28,31 @@ class AuthController extends Controller
 
         return redirect()->route('login');
     }
-<<<<<<< HEAD
 
     public function showRegister()
-{
-    return view('auth.register');
-}
-public function register(Request $request)
-{
-    $request->validate([
-        'name'     => 'required|string|max:100',
-        'email'    => 'required|email|unique:users',
-        'password' => 'required|min:8|confirmed',
-        'phone'    => 'nullable|string|max:20',
-    ]);
+    {
+        return view('auth.register');
+    }
 
-    $user = \App\Models\User::create([
-        'name'     => $request->name,
-        'email'    => $request->email,
-        'password' => \Illuminate\Support\Facades\Hash::make($request->password),
-        'role'     => 'user',
-        'phone'    => $request->phone,
-    ]);
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name'     => 'required|string|max:100',
+            'email'    => 'required|email|unique:users',
+            'password' => 'required|min:8|confirmed',
+            'phone'    => 'nullable|string|max:20',
+        ]);
 
-    Auth::login($user);
+        $user = User::create([
+            'name'     => $request->name,
+            'email'    => $request->email,
+            'password' => Hash::make($request->password),
+            'role'     => 'user',
+            'phone'    => $request->phone,
+        ]);
 
-    return redirect()->route('user.dashboard');
-}
-=======
->>>>>>> 1a966354809047339de1b44f686874e08c54a24e
+        Auth::login($user);
+
+        return redirect()->route('user.dashboard');
+    }
 }

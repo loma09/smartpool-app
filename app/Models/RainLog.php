@@ -6,13 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 class RainLog extends Model
 {
     protected $fillable = ['device_id', 'rain_value', 'cover_closed', 'notes'];
-    protected $casts = ['cover_closed' => 'boolean'];
+    protected $casts    = ['cover_closed' => 'boolean'];
 
     public function device()
     {
         return $this->belongsTo(Device::class, 'device_id', 'id');
     }
-}
-
-    protected $casts = ['cover_closed' => 'boolean'];
 }

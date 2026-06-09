@@ -13,20 +13,12 @@
     <div class="table-responsive">
         <table class="table table-hover align-middle mb-0">
             <thead>
-<<<<<<< HEAD
                 <tr><th>No</th><th>Nama</th><th>Email</th><th>Telepon</th><th>Bergabung</th><th>Aksi</th></tr>
-=======
-                <tr><th>#</th><th>Nama</th><th>Email</th><th>Telepon</th><th>Bergabung</th><th>Aksi</th></tr>
->>>>>>> 1a966354809047339de1b44f686874e08c54a24e
             </thead>
             <tbody>
                 @forelse($users as $user)
                 <tr>
-<<<<<<< HEAD
                     <td><small class="text-muted">{{ $loop->iteration }}</small></td>
-=======
-                    <td><small class="text-muted">{{ $user->id }}</small></td>
->>>>>>> 1a966354809047339de1b44f686874e08c54a24e
                     <td>
                         <div class="fw-semibold">{{ $user->name }}</div>
                     </td>

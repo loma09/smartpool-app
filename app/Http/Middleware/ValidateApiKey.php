@@ -15,20 +15,15 @@ class ValidateApiKey
             return response()->json(['success' => false, 'message' => 'API key diperlukan'], 401);
         }
 
-<<<<<<< HEAD
         $apiKey = ApiKey::where('api_key', $key)
             ->where('is_active', true)
             ->with('device') // eager load supaya tidak N+1
             ->first();
-=======
-        $apiKey = ApiKey::where('api_key', $key)->where('is_active', true)->first();
->>>>>>> 1a966354809047339de1b44f686874e08c54a24e
 
         if (!$apiKey) {
             return response()->json(['success' => false, 'message' => 'API key tidak valid'], 403);
         }
 
-<<<<<<< HEAD
         // Cek device masih ada dan aktif
         if (!$apiKey->device || !$apiKey->device->is_active) {
             return response()->json(['success' => false, 'message' => 'Device tidak aktif'], 403);
@@ -40,11 +35,3 @@ class ValidateApiKey
         return $next($request);
     }
 }
-=======
-        $apiKey->update(['last_used_at' => now()]);
-        $request->merge(['device_id' => $apiKey->device_id]);
-
-        return $next($request);
-    }
-}
->>>>>>> 1a966354809047339de1b44f686874e08c54a24e

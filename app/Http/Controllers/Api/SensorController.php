@@ -13,20 +13,16 @@ class SensorController extends Controller
 {
     /**
      * POST /api/sensor/data
-     * Menerima data dari ESP32 dan menyimpan ke database.
      */
     public function store(Request $request)
     {
         $request->validate([
-            'device_id'        => 'required|string',
-            'turbidity_value'  => 'required|numeric',
-            'turbidity_status' => 'required|in:jernih,keruh,sangat_keruh',
-            'rain_detected'    => 'required|boolean',
-            'rain_value'       => 'required|integer',
-            'esp32_online'     => 'required|boolean',
+            'device_id'       => 'required|string',
+            'turbidity_value' => 'required|numeric',
+            'rain_value'      => 'required|integer',
+            'esp32_online'    => 'required|boolean',
         ]);
 
-        // Cari device berdasarkan device_id string
         $device = Device::where('device_id', $request->device_id)
             ->where('is_active', true)
             ->first();
@@ -38,29 +34,11 @@ class SensorController extends Controller
             ], 404);
         }
 
-        $turbidity       = (float) $request->turbidity_value;
-        $rainValue       = (int)   $request->rain_value;
-
-        // ✅ Pakai nilai langsung dari ESP32
-        $turbidityStatus = $request->turbidity_status;
-        $rainDetected    = (bool) $request->rain_detected;
-
-        // Update last_seen_at device
-        $device->update(['last_seen_at' => now()]);
-
-        // Simpan pembacaan sensor (setiap request selalu disimpan)
-        $reading = SensorReading::create([
-            'device_id'        => $device->id,
-            'turbidity_value' => 'required|numeric',
-            'rain_value'      => 'required|integer',
-        ]);
-
-        $deviceId  = $request->device_id;
         $turbidity = (float) $request->turbidity_value;
         $rainValue = (int)   $request->rain_value;
 
         // Ambil threshold dari DB
-        $thKeruh      = SensorThreshold::get('turbidity_keruh', 50);
+        $thKeruh       = SensorThreshold::get('turbidity_keruh', 50);
         $thSangatKeruh = SensorThreshold::get('turbidity_sangat_keruh', 100);
         $thRain        = SensorThreshold::get('rain_threshold', 500);
 
@@ -74,9 +52,12 @@ class SensorController extends Controller
 
         $rainDetected = $rainValue < $thRain;
 
+        // Update last_seen_at device
+        $device->update(['last_seen_at' => now()]);
+
         // Simpan pembacaan sensor
         $reading = SensorReading::create([
-            'device_id'        => $deviceId,
+            'device_id'        => $device->id,
             'turbidity_value'  => $turbidity,
             'turbidity_status' => $turbidityStatus,
             'rain_detected'    => $rainDetected,
@@ -84,51 +65,26 @@ class SensorController extends Controller
             'esp32_online'     => true,
         ]);
 
-        // ✅ Log hujan: catat setiap kali status hujan BERUBAH dari tidak hujan → hujan
-        // Mencegah spam log saat hujan terus-menerus, tapi tetap mencatat setiap event baru
+        // Log hujan: catat jika terdeteksi dan interval >= 5 menit
         $rainAction = false;
         if ($rainDetected) {
             $lastRain = RainLog::where('device_id', $device->id)->latest()->first();
-            $lastWasRain = $lastRain && $lastRain->created_at->diffInMinutes(now()) < 5;
 
-            if (!$lastWasRain) {
+            if (!$lastRain || $lastRain->created_at->diffInMinutes(now()) >= 5) {
                 RainLog::create([
                     'device_id'    => $device->id,
                     'rain_value'   => $rainValue,
                     'cover_closed' => true,
                     'notes'        => 'Penutup otomatis menutup karena hujan terdeteksi.',
-        // Log hujan jika terdeteksi
-        $rainAction = false;
-        if ($rainDetected) {
-            // Cek apakah log hujan terakhir sudah lebih dari 5 menit
-            $lastRain = RainLog::where('device_id', $deviceId)
-                ->latest()->first();
-
-            if (!$lastRain || $lastRain->created_at->diffInMinutes(now()) >= 5) {
-                RainLog::create([
-                    'device_id'   => $deviceId,
-                    'rain_value'  => $rainValue,
-                    'cover_closed' => true,
-                    'notes'       => 'Penutup otomatis menutup karena hujan terdeteksi.',
                 ]);
                 $rainAction = true;
             }
         }
 
-        // ✅ Log kaporit: catat setiap kali status keruh BERUBAH (bukan sekadar interval waktu)
+        // Log kaporit: catat jika keruh dan interval >= 30 menit
         $chlorineAction = false;
         if (in_array($turbidityStatus, ['keruh', 'sangat_keruh'])) {
             $lastChlor = ChlorineLog::where('device_id', $device->id)->latest()->first();
-
-            // Catat jika: belum pernah ada log, atau sudah lebih dari 5 menit sejak log terakhir
-            $melewatiInterval = !$lastChlor || $lastChlor->created_at->diffInMinutes(now()) >= 5;
-
-            if ($melewatiInterval) {
-        // Log kaporit jika keruh
-        $chlorineAction = false;
-        if (in_array($turbidityStatus, ['keruh', 'sangat_keruh'])) {
-            $lastChlor = ChlorineLog::where('device_id', $deviceId)
-                ->latest()->first();
 
             if (!$lastChlor || $lastChlor->created_at->diffInMinutes(now()) >= 30) {
                 $amount = SensorThreshold::get('chlorine_amount_ml', 50);
@@ -143,12 +99,6 @@ class SensorController extends Controller
                     'chlorine_added'     => true,
                     'chlorine_amount_ml' => $amount,
                     'notes'              => "Kaporit {$amount}ml ditambahkan otomatis.",
-                    'device_id'         => $deviceId,
-                    'turbidity_value'   => $turbidity,
-                    'turbidity_status'  => $turbidityStatus,
-                    'chlorine_added'    => true,
-                    'chlorine_amount_ml' => $amount,
-                    'notes'             => "Kaporit {$amount}ml ditambahkan otomatis.",
                 ]);
                 $chlorineAction = true;
             }
@@ -164,8 +114,6 @@ class SensorController extends Controller
                 'actions'          => [
                     'cover_closed'   => $rainAction,
                     'chlorine_added' => $chlorineAction,
-                    'cover_closed'    => $rainAction,
-                    'chlorine_added'  => $chlorineAction,
                 ],
             ],
         ]);
@@ -185,12 +133,6 @@ class SensorController extends Controller
         }
 
         $reading = SensorReading::latestByDevice($device->id);
-     * Mengembalikan data sensor terbaru untuk ESP32.
-     */
-    public function latest(Request $request)
-    {
-        $deviceId = $request->device_id;
-        $reading  = SensorReading::latestByDevice($deviceId);
 
         if (!$reading) {
             return response()->json(['success' => false, 'message' => 'Belum ada data'], 404);
@@ -208,11 +150,6 @@ class SensorController extends Controller
     public function thresholds()
     {
         $thresholds = SensorThreshold::all()->keyBy('key')
-     * Mengembalikan konfigurasi threshold untuk ESP32.
-     */
-    public function thresholds()
-    {
-        $thresholds = \App\Models\SensorThreshold::all()->keyBy('key')
             ->map(fn($t) => $t->value);
 
         return response()->json(['success' => true, 'data' => $thresholds]);
@@ -230,18 +167,6 @@ class SensorController extends Controller
             'online'      => true,
             'device_id'   => $request->device_id,
             'device_name' => $device?->name,
-            'server_time' => now()->toDateTimeString(),
-        ]);
-    }
-}
-     * Endpoint heartbeat ESP32.
-     */
-    public function status(Request $request)
-    {
-        return response()->json([
-            'success'   => true,
-            'online'    => true,
-            'device_id' => $request->device_id,
             'server_time' => now()->toDateTimeString(),
         ]);
     }

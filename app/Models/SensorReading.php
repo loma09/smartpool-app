@@ -1,7 +1,5 @@
 <?php
 namespace App\Models;
-// app/Models/SensorReading.php
-namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -22,9 +20,8 @@ class SensorReading extends Model
         return $this->belongsTo(Device::class, 'device_id', 'id');
     }
 
-    public static function latestByDevice(int $deviceId): ?self
     /** Ambil data terbaru per device */
-    public static function latestByDevice(string $deviceId): ?self
+    public static function latestByDevice(int $deviceId): ?self
     {
         return self::where('device_id', $deviceId)->latest()->first();
     }
@@ -36,10 +33,6 @@ class SensorReading extends Model
             'keruh'        => 'Keruh',
             'sangat_keruh' => 'Sangat Keruh',
             default        => '-',
-            'jernih'      => 'Jernih',
-            'keruh'       => 'Keruh',
-            'sangat_keruh' => 'Sangat Keruh',
-            default       => '-',
         };
     }
 
@@ -50,13 +43,6 @@ class SensorReading extends Model
             'keruh'        => 'warning',
             'sangat_keruh' => 'danger',
             default        => 'secondary',
-        };
-    }
-}
-            'jernih'      => 'success',
-            'keruh'       => 'warning',
-            'sangat_keruh' => 'danger',
-            default       => 'secondary',
         };
     }
 }
