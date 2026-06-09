@@ -3,6 +3,7 @@
 @section('page-title', 'Dashboard Kolam')
 
 @section('content')
+<<<<<<< HEAD
 
 {{-- Pilih Device --}}
 @if($devices->count() > 0)
@@ -39,6 +40,10 @@
 @else
 
 <div class="row g-3 mb-4">
+=======
+<div class="row g-3 mb-4">
+
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e
     {{-- ESP32 Status --}}
     <div class="col-12 col-md-3">
         <div class="stat-card h-100">
@@ -46,14 +51,23 @@
                 <div class="icon-box" style="background:#e0f2fe">
                     <i class="bi bi-cpu" style="color:#0284c7"></i>
                 </div>
+<<<<<<< HEAD
                 <span class="badge rounded-pill" id="esp32-badge">
+=======
+                <span class="badge {{ $esp32Online ? 'bg-success' : 'bg-danger' }} rounded-pill">
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e
                     {{ $esp32Online ? 'Online' : 'Offline' }}
                 </span>
             </div>
             <div class="value">ESP32</div>
             <div class="label">
+<<<<<<< HEAD
                 <span class="status-dot" id="esp32-dot"></span>
                 <span id="esp32-label">{{ $esp32Online ? 'Perangkat terhubung' : 'Tidak ada koneksi' }}</span>
+=======
+                <span class="status-dot {{ $esp32Online ? 'online' : 'offline' }}"></span>
+                {{ $esp32Online ? 'Perangkat terhubung' : 'Tidak ada koneksi' }}
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e
             </div>
         </div>
     </div>
@@ -66,10 +80,19 @@
                     <i class="bi bi-droplet-half" style="color:#d97706"></i>
                 </div>
                 @if($latest)
+<<<<<<< HEAD
                     <span class="badge rounded-pill" id="turbidity-badge">{{ $latest->turbidity_label }}</span>
                 @endif
             </div>
             <div class="value" id="turbidity-value">{{ $latest ? number_format($latest->turbidity_value, 1) : '—' }} <small class="fs-6 fw-normal text-muted">NTU</small></div>
+=======
+                    <span class="badge bg-{{ $latest->turbidity_color }} rounded-pill">
+                        {{ $latest->turbidity_label }}
+                    </span>
+                @endif
+            </div>
+            <div class="value">{{ $latest ? number_format($latest->turbidity_value, 1) : '—' }} <small class="fs-6 fw-normal text-muted">NTU</small></div>
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e
             <div class="label">Kekeruhan air kolam</div>
         </div>
     </div>
@@ -82,10 +105,19 @@
                     <i class="bi bi-cloud-rain" style="color:#7c3aed"></i>
                 </div>
                 @if($latest)
+<<<<<<< HEAD
                     <span class="badge rounded-pill" id="rain-badge">{{ $latest->rain_detected ? 'Hujan' : 'Cerah' }}</span>
                 @endif
             </div>
             <div class="value" id="rain-value">{{ $latest ? $latest->rain_value : '—' }}</div>
+=======
+                    <span class="badge {{ $latest->rain_detected ? 'bg-primary' : 'bg-secondary' }} rounded-pill">
+                        {{ $latest->rain_detected ? 'Hujan' : 'Cerah' }}
+                    </span>
+                @endif
+            </div>
+            <div class="value">{{ $latest ? $latest->rain_value : '—' }}</div>
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e
             <div class="label">Nilai ADC sensor hujan</div>
         </div>
     </div>
@@ -98,11 +130,19 @@
             </div>
             <div class="row g-0 text-center mt-1">
                 <div class="col-6 border-end">
+<<<<<<< HEAD
                     <div class="value" style="font-size:1.2rem" id="stat-rain">{{ $stats['rain_count'] }}</div>
                     <div class="label" style="font-size:.7rem">Hujan (24j)</div>
                 </div>
                 <div class="col-6">
                     <div class="value" style="font-size:1.2rem" id="stat-chlor">{{ $stats['chlorine_count'] }}</div>
+=======
+                    <div class="value" style="font-size:1.2rem">{{ $stats['rain_count'] }}</div>
+                    <div class="label" style="font-size:.7rem">Hujan (24j)</div>
+                </div>
+                <div class="col-6">
+                    <div class="value" style="font-size:1.2rem">{{ $stats['chlorine_count'] }}</div>
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e
                     <div class="label" style="font-size:.7rem">Kaporit (24j)</div>
                 </div>
             </div>
@@ -115,8 +155,13 @@
     <div class="col-12 col-lg-6">
         <div class="table-card">
             <div class="p-3 border-bottom d-flex align-items-center justify-content-between">
+<<<<<<< HEAD
                 <h6 class="mb-0"><i class="bi bi-cloud-rain me-2 text-primary"></i>Log Hujan Terbaru</h6>
                 <a href="{{ route('user.rain-logs', ['device_id' => $device->id]) }}" class="btn btn-sm btn-outline-primary rounded-pill">Lihat Semua</a>
+=======
+                <h6 class="mb-0 fw-700"><i class="bi bi-cloud-rain me-2 text-primary"></i>Log Hujan Terbaru</h6>
+                <a href="{{ route('user.rain-logs') }}" class="btn btn-sm btn-outline-primary rounded-pill">Lihat Semua</a>
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e
             </div>
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
@@ -127,7 +172,11 @@
                             <th>Penutup</th>
                         </tr>
                     </thead>
+<<<<<<< HEAD
                     <tbody id="rain-logs-tbody">
+=======
+                    <tbody>
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e
                         @forelse($rainLogs as $log)
                         <tr>
                             <td><small>{{ $log->created_at->format('d/m H:i') }}</small></td>
@@ -153,8 +202,13 @@
     <div class="col-12 col-lg-6">
         <div class="table-card">
             <div class="p-3 border-bottom d-flex align-items-center justify-content-between">
+<<<<<<< HEAD
                 <h6 class="mb-0"><i class="bi bi-droplet-half me-2 text-warning"></i>Log Kaporit Terbaru</h6>
                 <a href="{{ route('user.chlorine-logs', ['device_id' => $device->id]) }}" class="btn btn-sm btn-outline-warning rounded-pill">Lihat Semua</a>
+=======
+                <h6 class="mb-0 fw-700"><i class="bi bi-droplet-half me-2 text-warning"></i>Log Kaporit Terbaru</h6>
+                <a href="{{ route('user.chlorine-logs') }}" class="btn btn-sm btn-outline-warning rounded-pill">Lihat Semua</a>
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e
             </div>
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
@@ -166,7 +220,11 @@
                             <th>Status</th>
                         </tr>
                     </thead>
+<<<<<<< HEAD
                     <tbody id="chlor-logs-tbody">
+=======
+                    <tbody>
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e
                         @forelse($chlorLogs as $log)
                         <tr>
                             <td><small>{{ $log->created_at->format('d/m H:i') }}</small></td>
@@ -189,13 +247,17 @@
         </div>
     </div>
 </div>
+<<<<<<< HEAD
 
 @endif
 
+=======
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e
 @endsection
 
 @push('scripts')
 <script>
+<<<<<<< HEAD
 @isset($device)
 const POLL_URL    = "{{ route('user.dashboard.poll') }}";
 const DEVICE_ID   = "{{ $device->id }}";
@@ -304,3 +366,9 @@ setInterval(poll, POLL_INTERVAL);
 @endisset
 </script>
 @endpush
+=======
+    // Auto-refresh data setiap 30 detik
+    setTimeout(() => location.reload(), 30000);
+</script>
+@endpush
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e

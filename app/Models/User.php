@@ -3,6 +3,7 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+<<<<<<< HEAD
 use Laravel\Sanctum\HasApiTokens;
 
 /**
@@ -16,6 +17,13 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Authenticatable
 {
     use HasApiTokens, Notifiable;
+=======
+use Laravel\Sanctum\HasApiTokens; // 👈 add this
+
+class User extends Authenticatable
+{
+    use HasApiTokens, Notifiable; // 👈 add HasApiTokens here
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e
 
     protected $fillable = ['name', 'email', 'password', 'role', 'phone', 'avatar'];
 
@@ -32,9 +40,12 @@ class User extends Authenticatable
     {
         return $this->role === 'user';
     }
+<<<<<<< HEAD
 
     public function devices()
     {
         return $this->hasMany(Device::class);
     }
+=======
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e
 }

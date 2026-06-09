@@ -1,10 +1,14 @@
 <?php
+<<<<<<< HEAD
 
+=======
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+<<<<<<< HEAD
 use App\Models\Device;
 use App\Models\SensorReading;
 use App\Models\RainLog;
@@ -48,10 +52,40 @@ class DashboardController extends Controller
         $esp32Online = $device->isOnline();
 
         return view('user.dashboard', compact('devices', 'device', 'latest', 'rainLogs', 'chlorLogs', 'esp32Online', 'stats'));
+=======
+use App\Models\SensorReading;
+use App\Models\RainLog;
+use App\Models\ChlorineLog;
+use App\Models\ApiKey;
+
+class DashboardController extends Controller
+{
+    private string $deviceId = 'ESP32-001';
+    public function index()
+    {
+        $latest      = SensorReading::latestByDevice($this->deviceId);
+        $rainLogs    = RainLog::where('device_id', $this->deviceId)->latest()->take(5)->get();
+        $chlorLogs   = ChlorineLog::where('device_id', $this->deviceId)->latest()->take(5)->get();
+        $esp32Online = $this->checkEsp32Status();
+
+        // Statistik 24 jam terakhir
+        $stats = [
+            'rain_count'     => RainLog::where('device_id', $this->deviceId)
+                ->where('created_at', '>=', now()->subDay())->count(),
+            'chlorine_count' => ChlorineLog::where('device_id', $this->deviceId)
+                ->where('created_at', '>=', now()->subDay())->count(),
+            'avg_turbidity'  => SensorReading::where('device_id', $this->deviceId)
+                ->where('created_at', '>=', now()->subDay())
+                ->avg('turbidity_value'),
+        ];
+
+        return view('user.dashboard', compact('latest', 'rainLogs', 'chlorLogs', 'esp32Online', 'stats'));
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e
     }
 
     public function rainLogs(Request $request)
     {
+<<<<<<< HEAD
         $user    = auth()->user();
         $devices = Device::where('user_id', $user->id)->where('is_active', true)->get();
         $device  = $this->getDevice($request, $request->device_id);
@@ -62,15 +96,23 @@ class DashboardController extends Controller
         }
 
         $logs = RainLog::where('device_id', $device->id)
+=======
+        $logs = RainLog::where('device_id', $this->deviceId)
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e
             ->when($request->date, fn($q) => $q->whereDate('created_at', $request->date))
             ->latest()
             ->paginate(15);
 
+<<<<<<< HEAD
         return view('user.rain-logs', compact('logs', 'devices', 'device'));
+=======
+        return view('user.rain-logs', compact('logs'));
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e
     }
 
     public function chlorineLogs(Request $request)
     {
+<<<<<<< HEAD
         $user    = auth()->user();
         $devices = Device::where('user_id', $user->id)->where('is_active', true)->get();
         $device  = $this->getDevice($request, $request->device_id);
@@ -81,11 +123,18 @@ class DashboardController extends Controller
         }
 
         $logs = ChlorineLog::where('device_id', $device->id)
+=======
+        $logs = ChlorineLog::where('device_id', $this->deviceId)
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e
             ->when($request->date, fn($q) => $q->whereDate('created_at', $request->date))
             ->latest()
             ->paginate(15);
 
+<<<<<<< HEAD
         return view('user.chlorine-logs', compact('logs', 'devices', 'device'));
+=======
+        return view('user.chlorine-logs', compact('logs'));
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e
     }
 
     public function profile()
@@ -96,11 +145,21 @@ class DashboardController extends Controller
     public function updateProfile(Request $request)
     {
         $user = auth()->user();
+<<<<<<< HEAD
+=======
+
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e
         $request->validate([
             'name'  => 'required|string|max:100',
             'phone' => 'nullable|string|max:20',
         ]);
+<<<<<<< HEAD
         $user->update($request->only('name', 'phone'));
+=======
+
+        $user->update($request->only('name', 'phone'));
+
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e
         return back()->with('success', 'Profil berhasil diperbarui.');
     }
 
@@ -110,6 +169,7 @@ class DashboardController extends Controller
             'current_password' => 'required',
             'password'         => 'required|min:8|confirmed',
         ]);
+<<<<<<< HEAD
         $user = auth()->user();
         if (!Hash::check($request->current_password, $user->password)) {
             return back()->withErrors(['current_password' => 'Password saat ini tidak sesuai.']);
@@ -224,5 +284,25 @@ class DashboardController extends Controller
             'Content-Type'        => 'text/csv',
             'Content-Disposition' => "attachment; filename=\"$filename\"",
         ]);
+=======
+
+        $user = auth()->user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            return back()->withErrors(['current_password' => 'Password saat ini tidak sesuai.']);
+        }
+
+        $user->update(['password' => Hash::make($request->password)]);
+
+        return back()->with('success', 'Password berhasil diperbarui.');
+    }
+
+    private function checkEsp32Status(): bool
+    {
+        $latest = SensorReading::where('device_id', $this->deviceId)->latest()->first();
+        if (!$latest) return false;
+        // Anggap offline jika tidak ada data dalam 2 menit
+        return $latest->created_at->diffInMinutes(now()) < 2;
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e
     }
 }

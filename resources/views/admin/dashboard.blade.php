@@ -18,7 +18,11 @@
             <div class="icon-box mb-2" style="background:#ede9fe">
                 <i class="bi bi-cloud-rain" style="color:#7c3aed"></i>
             </div>
+<<<<<<< HEAD
             <div class="value" id="admin-rain-today">{{ $stats['rain_today'] }}</div>
+=======
+            <div class="value">{{ $stats['rain_today'] }}</div>
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e
             <div class="label">Deteksi Hujan Hari Ini</div>
         </div>
     </div>
@@ -27,7 +31,11 @@
             <div class="icon-box mb-2" style="background:#fef3c7">
                 <i class="bi bi-droplet-half" style="color:#d97706"></i>
             </div>
+<<<<<<< HEAD
             <div class="value" id="admin-chlor-today">{{ $stats['chlorine_today'] }}</div>
+=======
+            <div class="value">{{ $stats['chlorine_today'] }}</div>
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e
             <div class="label">Kaporit Hari Ini</div>
         </div>
     </div>
@@ -36,7 +44,11 @@
             <div class="icon-box mb-2" style="background:#dcfce7">
                 <i class="bi bi-activity" style="color:#16a34a"></i>
             </div>
+<<<<<<< HEAD
             <div class="value" id="admin-avg-ntu">{{ $stats['avg_turbidity'] ? number_format($stats['avg_turbidity'], 1) : '—' }}</div>
+=======
+            <div class="value">{{ $stats['avg_turbidity'] ? number_format($stats['avg_turbidity'], 1) : '—' }}</div>
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e
             <div class="label">Rata-rata NTU (24j)</div>
         </div>
     </div>
@@ -47,6 +59,7 @@
 <div class="row g-3 mb-4">
     <div class="col-12">
         <div class="table-card p-3">
+<<<<<<< HEAD
             <h6 class="fw-bold mb-3 d-flex align-items-center justify-content-between">
                 <span><i class="bi bi-broadcast me-2 text-success"></i>Status Sensor Terkini</span>
                 <small class="text-muted fw-normal d-flex align-items-center gap-1">
@@ -54,10 +67,14 @@
                     <span id="admin-poll-status">Live</span>
                 </small>
             </h6>
+=======
+            <h6 class="fw-bold mb-3"><i class="bi bi-broadcast me-2 text-success"></i>Status Sensor Terkini</h6>
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e
             <div class="row g-3">
                 <div class="col-md-3">
                     <div class="p-3 rounded-3 bg-light text-center">
                         <div class="small text-muted">Device</div>
+<<<<<<< HEAD
                         <strong id="admin-device">{{ $latest->device->device_id ?? '—' }}</strong>
                     </div>
                 </div>
@@ -74,6 +91,24 @@
                         <strong id="admin-rain-value">{{ $latest->rain_value }} ADC</strong>
                         <div>
                             <span class="badge mt-1" id="admin-rain-badge">
+=======
+                        <strong>{{ $latest->device_id }}</strong>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3 rounded-3 text-center bg-{{ $latest->turbidity_color }} bg-opacity-10">
+                        <div class="small text-muted">Kekeruhan</div>
+                        <strong>{{ number_format($latest->turbidity_value, 1) }} NTU</strong>
+                        <div><span class="badge bg-{{ $latest->turbidity_color }} mt-1">{{ $latest->turbidity_label }}</span></div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3 rounded-3 text-center {{ $latest->rain_detected ? 'bg-primary bg-opacity-10' : 'bg-light' }}">
+                        <div class="small text-muted">Hujan</div>
+                        <strong>{{ $latest->rain_value }} ADC</strong>
+                        <div>
+                            <span class="badge {{ $latest->rain_detected ? 'bg-primary' : 'bg-secondary' }} mt-1">
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e
                                 {{ $latest->rain_detected ? 'Hujan' : 'Tidak Hujan' }}
                             </span>
                         </div>
@@ -82,8 +117,13 @@
                 <div class="col-md-3">
                     <div class="p-3 rounded-3 bg-light text-center">
                         <div class="small text-muted">Update Terakhir</div>
+<<<<<<< HEAD
                         <strong id="admin-updated-at">{{ $latest->created_at->diffForHumans() }}</strong>
                         <div class="small text-muted" id="admin-updated-time">{{ $latest->created_at->format('H:i:s') }}</div>
+=======
+                        <strong>{{ $latest->created_at->diffForHumans() }}</strong>
+                        <div class="small text-muted">{{ $latest->created_at->format('H:i:s') }}</div>
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e
                     </div>
                 </div>
             </div>
@@ -109,11 +149,19 @@
                     <th>Hujan</th>
                 </tr>
             </thead>
+<<<<<<< HEAD
             <tbody id="admin-readings-tbody">
                 @foreach($recentReadings as $r)
                 <tr>
                     <td><small>{{ $r->created_at->format('d/m H:i:s') }}</small></td>
                     <td><span class="badge bg-dark rounded-pill">{{ $r->device->device_id ?? '—' }}</span></td>
+=======
+            <tbody>
+                @foreach($recentReadings as $r)
+                <tr>
+                    <td><small>{{ $r->created_at->format('d/m H:i:s') }}</small></td>
+                    <td><span class="badge bg-dark rounded-pill">{{ $r->device_id }}</span></td>
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e
                     <td>{{ number_format($r->turbidity_value, 1) }}</td>
                     <td><span class="badge bg-{{ $r->turbidity_color }}">{{ $r->turbidity_label }}</span></td>
                     <td>{{ $r->rain_value }}</td>
@@ -133,6 +181,7 @@
 @endsection
 
 @push('scripts')
+<<<<<<< HEAD
 <script>
 const ADMIN_POLL_URL      = "{{ route('admin.dashboard.poll') }}";
 const ADMIN_POLL_INTERVAL = 5000; // 5 detik
@@ -203,3 +252,7 @@ async function adminPoll() {
 setInterval(adminPoll, ADMIN_POLL_INTERVAL);
 </script>
 @endpush
+=======
+<script>setTimeout(() => location.reload(), 30000);</script>
+@endpush
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e

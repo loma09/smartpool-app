@@ -41,6 +41,7 @@ class AuthController extends Controller
 
         return redirect()->route('login');
     }
+<<<<<<< HEAD
 
     public function showRegister()
 {
@@ -67,4 +68,6 @@ public function register(Request $request)
 
     return redirect()->route('user.dashboard');
 }
+=======
+>>>>>>> 1a966354809047339de1b44f686874e08c54a24e
 }
