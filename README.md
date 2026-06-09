@@ -1,3 +1,78 @@
+# Smartpool App
+
+Aplikasi berbasis Laravel untuk manajemen Smartpool.
+
+## Persyaratan Sistem
+
+Sebelum memulai, pastikan komputer Anda sudah terinstal:
+- PHP >= 8.2 (atau sesuaikan dengan versi Laravel proyek ini)
+- [Composer](https://getcomposer.org)
+- Database Server ([Laragon](https://laragon.org) / XAMPP / MySQL)
+
+## Panduan Instalasi & Setup
+
+Ikuti langkah-langkah di bawah ini secara berurutan untuk menjalankan proyek di komputer lokal Anda:
+
+### 1. Clone atau Ekstrak Repositori
+Jika Anda mengunduh dalam bentuk `.zip`, ekstrak terlebih dahulu. Jika menggunakan Git, jalankan:
+```bash
+git clone https://github.com
+cd smartpool-app
+```
+
+### 2. Salin File Environment (`.env`)
+Salin file konfigurasi `.env.example` menjadi `.env`:
+- **Windows (PowerShell/CMD):**
+  ```powershell
+  copy .env.example .env
+  ```
+- **Linux / Mac / Git Bash:**
+  ```bash
+  cp .env.example .env
+  ```
+
+### 3. Konfigurasi Database
+Buka file `.env` yang baru dibuat menggunakan Text Editor (seperti VS Code), lalu cari dan sesuaikan bagian konfigurasi database berikut dengan server lokal Anda (misalnya Laragon/XAMPP):
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=nama_database_anda
+DB_USERNAME=root
+DB_PASSWORD=
+```
+*Catatan: Pastikan Anda sudah membuat database kosong dengan nama yang sama seperti di `DB_DATABASE` melalui phpMyAdmin.*
+
+### 4. Bersihkan Cache & Install Dependensi
+Untuk menghindari error penguncian file (*Resource temporarily unavailable*) di Windows, bersihkan cache terlebih dahulu lalu install dependensi menggunakan mode aman:
+```powershell
+composer clear-cache
+composer install --no-scripts
+```
+
+### 5. Generate Autoload & Application Key
+Setelah instalasi selesai, buat file *autoload* dan kunci keamanan aplikasi:
+```powershell
+composer dump-autoload
+php artisan key:generate
+```
+
+### 6. Jalankan Database Migration
+Jalankan perintah ini untuk membuat tabel-tabel database yang diperlukan aplikasi:
+```powershell
+php artisan migrate
+```
+*(Opsional: Jika ada data bawaan/dummy, jalankan `php artisan migrate --seed`)*
+
+### 7. Jalankan Server Lokal
+Aplikasi sekarang siap digunakan. Nyalakan server lokal dengan perintah:
+```powershell
+php artisan serve
+```
+Buka browser Anda dan akses aplikasi melalui tautan: **http://localhost:8000**
+
+
+
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
 <p align="center">
