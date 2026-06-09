@@ -6,7 +6,6 @@ use App\Http\Controllers\User\DashboardController;
 use App\Http\Controllers\Admin\AdminController;
 
 // ── Auth ───────────────────────────────────────────────────────────────────
-<<<<<<< HEAD
 Route::middleware('guest')->group(function () {
     Route::get('/login',    [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login',   [AuthController::class, 'login']);
@@ -38,7 +37,6 @@ Route::middleware(['auth', 'role:user'])->prefix('user')->name('user.')->group(f
     Route::get('/profile',              [DashboardController::class, 'profile'])->name('profile');
     Route::put('/profile',              [DashboardController::class, 'updateProfile'])->name('profile.update');
     Route::put('/password',             [DashboardController::class, 'updatePassword'])->name('password.update');
-=======
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -53,12 +51,10 @@ Route::middleware(['auth', 'role:user'])->prefix('user')->name('user.')->group(f
     Route::get('/profile',         [DashboardController::class, 'profile'])->name('profile');
     Route::put('/profile',         [DashboardController::class, 'updateProfile'])->name('profile.update');
     Route::put('/password',        [DashboardController::class, 'updatePassword'])->name('password.update');
->>>>>>> 1a966354809047339de1b44f686874e08c54a24e
 });
 
 // ── Admin Routes ───────────────────────────────────────────────────────────
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-<<<<<<< HEAD
     Route::get('/dashboard',            [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/dashboard/poll',       [AdminController::class, 'pollDashboard'])->name('dashboard.poll');
     Route::get('/rain-logs',            [AdminController::class, 'rainLogs'])->name('rain-logs');
@@ -88,7 +84,6 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/devices/{device}/generate-key', [AdminController::class, 'generateApiKey'])->name('devices.generate-key');
     Route::delete('/devices/{device}/delete-key', [AdminController::class, 'deleteApiKey'])->name('devices.delete-key');
 });
-=======
     Route::get('/dashboard',        [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/rain-logs',        [AdminController::class, 'rainLogs'])->name('rain-logs');
     Route::get('/chlorine-logs',    [AdminController::class, 'chlorineLogs'])->name('chlorine-logs');
@@ -105,4 +100,3 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/sensor-config',    [AdminController::class, 'sensorConfig'])->name('sensor-config');
     Route::put('/sensor-config',    [AdminController::class, 'updateSensorConfig'])->name('sensor-config.update');
 });
->>>>>>> 1a966354809047339de1b44f686874e08c54a24e

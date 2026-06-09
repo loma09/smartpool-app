@@ -3,10 +3,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-<<<<<<< HEAD
 use App\Models\Device;
-=======
->>>>>>> 1a966354809047339de1b44f686874e08c54a24e
 use App\Models\SensorReading;
 use App\Models\RainLog;
 use App\Models\ChlorineLog;
@@ -21,7 +18,6 @@ class SensorController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-<<<<<<< HEAD
             'device_id'        => 'required|string',
             'turbidity_value'  => 'required|numeric',
             'turbidity_status' => 'required|in:jernih,keruh,sangat_keruh',
@@ -55,7 +51,6 @@ class SensorController extends Controller
         // Simpan pembacaan sensor (setiap request selalu disimpan)
         $reading = SensorReading::create([
             'device_id'        => $device->id,
-=======
             'turbidity_value' => 'required|numeric',
             'rain_value'      => 'required|integer',
         ]);
@@ -82,7 +77,6 @@ class SensorController extends Controller
         // Simpan pembacaan sensor
         $reading = SensorReading::create([
             'device_id'        => $deviceId,
->>>>>>> 1a966354809047339de1b44f686874e08c54a24e
             'turbidity_value'  => $turbidity,
             'turbidity_status' => $turbidityStatus,
             'rain_detected'    => $rainDetected,
@@ -90,7 +84,6 @@ class SensorController extends Controller
             'esp32_online'     => true,
         ]);
 
-<<<<<<< HEAD
         // ✅ Log hujan: catat setiap kali status hujan BERUBAH dari tidak hujan → hujan
         // Mencegah spam log saat hujan terus-menerus, tapi tetap mencatat setiap event baru
         $rainAction = false;
@@ -104,7 +97,6 @@ class SensorController extends Controller
                     'rain_value'   => $rainValue,
                     'cover_closed' => true,
                     'notes'        => 'Penutup otomatis menutup karena hujan terdeteksi.',
-=======
         // Log hujan jika terdeteksi
         $rainAction = false;
         if ($rainDetected) {
@@ -118,13 +110,11 @@ class SensorController extends Controller
                     'rain_value'  => $rainValue,
                     'cover_closed' => true,
                     'notes'       => 'Penutup otomatis menutup karena hujan terdeteksi.',
->>>>>>> 1a966354809047339de1b44f686874e08c54a24e
                 ]);
                 $rainAction = true;
             }
         }
 
-<<<<<<< HEAD
         // ✅ Log kaporit: catat setiap kali status keruh BERUBAH (bukan sekadar interval waktu)
         $chlorineAction = false;
         if (in_array($turbidityStatus, ['keruh', 'sangat_keruh'])) {
@@ -134,7 +124,6 @@ class SensorController extends Controller
             $melewatiInterval = !$lastChlor || $lastChlor->created_at->diffInMinutes(now()) >= 5;
 
             if ($melewatiInterval) {
-=======
         // Log kaporit jika keruh
         $chlorineAction = false;
         if (in_array($turbidityStatus, ['keruh', 'sangat_keruh'])) {
@@ -142,28 +131,24 @@ class SensorController extends Controller
                 ->latest()->first();
 
             if (!$lastChlor || $lastChlor->created_at->diffInMinutes(now()) >= 30) {
->>>>>>> 1a966354809047339de1b44f686874e08c54a24e
                 $amount = SensorThreshold::get('chlorine_amount_ml', 50);
                 if ($turbidityStatus === 'sangat_keruh') {
                     $amount *= 1.5;
                 }
 
                 ChlorineLog::create([
-<<<<<<< HEAD
                     'device_id'          => $device->id,
                     'turbidity_value'    => $turbidity,
                     'turbidity_status'   => $turbidityStatus,
                     'chlorine_added'     => true,
                     'chlorine_amount_ml' => $amount,
                     'notes'              => "Kaporit {$amount}ml ditambahkan otomatis.",
-=======
                     'device_id'         => $deviceId,
                     'turbidity_value'   => $turbidity,
                     'turbidity_status'  => $turbidityStatus,
                     'chlorine_added'    => true,
                     'chlorine_amount_ml' => $amount,
                     'notes'             => "Kaporit {$amount}ml ditambahkan otomatis.",
->>>>>>> 1a966354809047339de1b44f686874e08c54a24e
                 ]);
                 $chlorineAction = true;
             }
@@ -177,13 +162,10 @@ class SensorController extends Controller
                 'turbidity_status' => $turbidityStatus,
                 'rain_detected'    => $rainDetected,
                 'actions'          => [
-<<<<<<< HEAD
                     'cover_closed'   => $rainAction,
                     'chlorine_added' => $chlorineAction,
-=======
                     'cover_closed'    => $rainAction,
                     'chlorine_added'  => $chlorineAction,
->>>>>>> 1a966354809047339de1b44f686874e08c54a24e
                 ],
             ],
         ]);
@@ -191,7 +173,6 @@ class SensorController extends Controller
 
     /**
      * GET /api/sensor/latest
-<<<<<<< HEAD
      */
     public function latest(Request $request)
     {
@@ -204,14 +185,12 @@ class SensorController extends Controller
         }
 
         $reading = SensorReading::latestByDevice($device->id);
-=======
      * Mengembalikan data sensor terbaru untuk ESP32.
      */
     public function latest(Request $request)
     {
         $deviceId = $request->device_id;
         $reading  = SensorReading::latestByDevice($deviceId);
->>>>>>> 1a966354809047339de1b44f686874e08c54a24e
 
         if (!$reading) {
             return response()->json(['success' => false, 'message' => 'Belum ada data'], 404);
@@ -225,18 +204,15 @@ class SensorController extends Controller
 
     /**
      * GET /api/sensor/thresholds
-<<<<<<< HEAD
      */
     public function thresholds()
     {
         $thresholds = SensorThreshold::all()->keyBy('key')
-=======
      * Mengembalikan konfigurasi threshold untuk ESP32.
      */
     public function thresholds()
     {
         $thresholds = \App\Models\SensorThreshold::all()->keyBy('key')
->>>>>>> 1a966354809047339de1b44f686874e08c54a24e
             ->map(fn($t) => $t->value);
 
         return response()->json(['success' => true, 'data' => $thresholds]);
@@ -244,7 +220,6 @@ class SensorController extends Controller
 
     /**
      * GET /api/sensor/status
-<<<<<<< HEAD
      */
     public function status(Request $request)
     {
@@ -259,7 +234,6 @@ class SensorController extends Controller
         ]);
     }
 }
-=======
      * Endpoint heartbeat ESP32.
      */
     public function status(Request $request)
@@ -272,4 +246,3 @@ class SensorController extends Controller
         ]);
     }
 }
->>>>>>> 1a966354809047339de1b44f686874e08c54a24e

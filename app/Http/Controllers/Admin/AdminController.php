@@ -5,10 +5,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-<<<<<<< HEAD
 use App\Models\Device;
-=======
->>>>>>> 1a966354809047339de1b44f686874e08c54a24e
 use App\Models\SensorReading;
 use App\Models\RainLog;
 use App\Models\ChlorineLog;
@@ -16,7 +13,6 @@ use App\Models\SensorThreshold;
 
 class AdminController extends Controller
 {
-<<<<<<< HEAD
     // ── Dashboard ──────────────────────────────────────────────────────────
    public function dashboard()
 {
@@ -36,7 +32,6 @@ class AdminController extends Controller
 
     return view('admin.dashboard', compact('latest', 'stats', 'recentReadings', 'devices'));
 }
-=======
     private string $deviceId = 'ESP32-POOL-001';
 
     // ── Dashboard ──────────────────────────────────────────────────────────
@@ -56,12 +51,10 @@ class AdminController extends Controller
 
         return view('admin.dashboard', compact('latest', 'stats', 'recentReadings'));
     }
->>>>>>> 1a966354809047339de1b44f686874e08c54a24e
 
     // ── Rain Logs ──────────────────────────────────────────────────────────
     public function rainLogs(Request $request)
     {
-<<<<<<< HEAD
         $logs = RainLog::with('device.user')
             ->when($request->date, fn($q) => $q->whereDate('created_at', $request->date))
             ->when($request->device_id, fn($q) => $q->where('device_id', $request->device_id))
@@ -70,18 +63,11 @@ class AdminController extends Controller
         $devices = Device::all();
 
         return view('admin.rain-logs', compact('logs', 'devices'));
-=======
-        $logs = RainLog::when($request->date, fn($q) => $q->whereDate('created_at', $request->date))
-            ->latest()->paginate(15);
-
-        return view('admin.rain-logs', compact('logs'));
->>>>>>> 1a966354809047339de1b44f686874e08c54a24e
     }
 
     // ── Chlorine Logs ──────────────────────────────────────────────────────
     public function chlorineLogs(Request $request)
     {
-<<<<<<< HEAD
         $logs = ChlorineLog::with('device.user')
             ->when($request->date, fn($q) => $q->whereDate('created_at', $request->date))
             ->when($request->device_id, fn($q) => $q->where('device_id', $request->device_id))
@@ -185,22 +171,13 @@ class AdminController extends Controller
     {
         $device->delete();
         return redirect()->route('admin.devices')->with('success', 'Device berhasil dihapus.');
-=======
-        $logs = ChlorineLog::when($request->date, fn($q) => $q->whereDate('created_at', $request->date))
-            ->latest()->paginate(15);
-
-        return view('admin.chlorine-logs', compact('logs'));
->>>>>>> 1a966354809047339de1b44f686874e08c54a24e
     }
 
     // ── Kelola User ────────────────────────────────────────────────────────
     public function users()
     {
-<<<<<<< HEAD
         $users = User::where('role', 'user')->withCount('devices')->oldest()->paginate(10);
-=======
         $users = User::where('role', 'user')->latest()->paginate(10);
->>>>>>> 1a966354809047339de1b44f686874e08c54a24e
         return view('admin.users.index', compact('users'));
     }
 
@@ -271,17 +248,14 @@ class AdminController extends Controller
     public function updateSensorConfig(Request $request)
     {
         $request->validate([
-<<<<<<< HEAD
             'turbidity_keruh'        => 'required|numeric|min:0',
             'turbidity_sangat_keruh' => 'required|numeric|min:0',
             'rain_threshold'         => 'required|numeric|min:0',
             'chlorine_amount_ml'     => 'required|numeric|min:0',
-=======
             'turbidity_keruh'       => 'required|numeric|min:0',
             'turbidity_sangat_keruh' => 'required|numeric|min:0',
             'rain_threshold'        => 'required|numeric|min:0',
             'chlorine_amount_ml'    => 'required|numeric|min:0',
->>>>>>> 1a966354809047339de1b44f686874e08c54a24e
         ]);
 
         foreach ($request->only('turbidity_keruh', 'turbidity_sangat_keruh', 'rain_threshold', 'chlorine_amount_ml') as $key => $value) {
@@ -290,7 +264,6 @@ class AdminController extends Controller
 
         return back()->with('success', 'Konfigurasi sensor berhasil disimpan.');
     }
-<<<<<<< HEAD
 
     // ── Export CSV ─────────────────────────────────────────────────────────
     public function exportRainCsv(Request $request)
@@ -372,6 +345,4 @@ class AdminController extends Controller
         return back()->with('success', 'API key berhasil dihapus.');
     }
 }
-=======
 }
->>>>>>> 1a966354809047339de1b44f686874e08c54a24e
