@@ -5,12 +5,38 @@
 @section('content')
 <div class="row justify-content-center">
     <div class="col-12 col-lg-7">
+
+        {{-- Pilih Device --}}
+        <div class="table-card p-4 mb-3">
+            <h6 class="fw-bold mb-1"><i class="bi bi-cpu me-2 text-primary"></i>Pilih Device</h6>
+            <p class="text-muted small mb-3">Konfigurasi global berlaku untuk semua device yang tidak punya konfigurasi khusus.</p>
+            <select class="form-select rounded-3" onchange="window.location='?device_id='+this.value">
+                <option value="">-- Global (semua device) --</option>
+                @foreach($devices as $d)
+                    <option value="{{ $d->id }}" {{ $selectedDevice?->id == $d->id ? 'selected' : '' }}>
+                        {{ $d->device_id }} — {{ $d->name }}
+                    </option>
+                @endforeach
+            </select>
+            @if($selectedDevice)
+                <small class="text-success mt-1 d-block">
+                    <i class="bi bi-check-circle me-1"></i>
+                    Menampilkan konfigurasi untuk device: <strong>{{ $selectedDevice->device_id }}</strong>
+                </small>
+            @else
+                <small class="text-muted mt-1 d-block">
+                    <i class="bi bi-globe me-1"></i>Menampilkan konfigurasi global.
+                </small>
+            @endif
+        </div>
+
         <div class="table-card p-4">
             <h6 class="fw-bold mb-1"><i class="bi bi-sliders me-2 text-primary"></i>Ambang Batas Sensor</h6>
             <p class="text-muted small mb-4">Perubahan akan langsung diterapkan ke logika otomatis sistem.</p>
 
             <form method="POST" action="{{ route('admin.sensor-config.update') }}">
                 @csrf @method('PUT')
+                <input type="hidden" name="device_id" value="{{ $selectedDevice?->id }}">
 
                 <div class="mb-4 p-3 bg-light rounded-3">
                     <h6 class="text-muted small text-uppercase fw-bold letter-spacing-1 mb-3">Sensor Turbidity</h6>
@@ -66,6 +92,11 @@
 
                 <button type="submit" class="btn btn-primary rounded-3">
                     <i class="bi bi-save me-2"></i>Simpan Konfigurasi
+                    @if($selectedDevice)
+                        untuk {{ $selectedDevice->device_id }}
+                    @else
+                        (Global)
+                    @endif
                 </button>
             </form>
         </div>

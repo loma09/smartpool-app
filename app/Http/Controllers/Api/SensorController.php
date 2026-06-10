@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -147,14 +148,25 @@ class SensorController extends Controller
     /**
      * GET /api/sensor/thresholds
      */
-    public function thresholds()
+    // Ganti method thresholds() yang lama dengan ini
+
+    public function thresholds(Request $request)
     {
-        $thresholds = SensorThreshold::all()->keyBy('key')
-            ->map(fn($t) => $t->value);
+        $device = Device::where('device_id', $request->device_id)
+            ->where('is_active', true)
+            ->first();
 
-        return response()->json(['success' => true, 'data' => $thresholds]);
+        $deviceId = $device?->id;
+
+        $keys = ['turbidity_keruh', 'turbidity_sangat_keruh', 'rain_threshold', 'chlorine_amount_ml'];
+        $result = [];
+
+        foreach ($keys as $key) {
+            $result[$key] = SensorThreshold::get($key, 0, $deviceId);
+        }
+
+        return response()->json(['success' => true, 'data' => $result]);
     }
-
     /**
      * GET /api/sensor/status
      */

@@ -29,12 +29,12 @@ class DatabaseSeeder extends Seeder
             'role'     => 'user',
         ]);
 
-        // Threshold default sensor
+        /// Global threshold (berlaku semua device)
         $thresholds = [
-            ['key' => 'turbidity_keruh',       'value' => 50,   'unit' => 'NTU',  'description' => 'Batas bawah air keruh'],
-            ['key' => 'turbidity_sangat_keruh', 'value' => 100,  'unit' => 'NTU',  'description' => 'Batas sangat keruh'],
-            ['key' => 'rain_threshold',         'value' => 500,  'unit' => 'ADC',  'description' => 'Nilai ADC pendeteksi hujan (di bawah = hujan)'],
-            ['key' => 'chlorine_amount_ml',     'value' => 50,   'unit' => 'ml',   'description' => 'Jumlah kaporit yang ditambahkan saat keruh'],
+            ['device_id' => null, 'key' => 'turbidity_keruh',        'value' => 50,  'unit' => 'NTU'],
+            ['device_id' => null, 'key' => 'turbidity_sangat_keruh',  'value' => 100, 'unit' => 'NTU'],
+            ['device_id' => null, 'key' => 'rain_threshold',          'value' => 500, 'unit' => 'ADC'],
+            ['device_id' => null, 'key' => 'chlorine_amount_ml',      'value' => 50,  'unit' => 'ml'],
         ];
 
         foreach ($thresholds as $t) {

@@ -10,24 +10,28 @@ class SensorThresholdSeeder extends Seeder
     {
         $thresholds = [
             [
+                'device_id'   => null,
                 'key'         => 'turbidity_keruh',
                 'value'       => 50,
                 'unit'        => 'NTU',
                 'description' => 'Batas kekeruhan air kategori keruh',
             ],
             [
+                'device_id'   => null,
                 'key'         => 'turbidity_sangat_keruh',
                 'value'       => 100,
                 'unit'        => 'NTU',
                 'description' => 'Batas kekeruhan air kategori sangat keruh',
             ],
             [
+                'device_id'   => null,
                 'key'         => 'rain_threshold',
                 'value'       => 500,
                 'unit'        => 'ADC',
                 'description' => 'Batas nilai ADC sensor hujan',
             ],
             [
+                'device_id'   => null,
                 'key'         => 'chlorine_amount_ml',
                 'value'       => 50,
                 'unit'        => 'ml',
@@ -37,7 +41,7 @@ class SensorThresholdSeeder extends Seeder
 
         foreach ($thresholds as $threshold) {
             SensorThreshold::updateOrCreate(
-                ['key' => $threshold['key']],
+                ['key' => $threshold['key'], 'device_id' => null],
                 $threshold
             );
         }

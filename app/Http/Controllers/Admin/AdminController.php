@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
@@ -221,26 +222,41 @@ class AdminController extends Controller
     }
 
     // ── Konfigurasi Sensor ─────────────────────────────────────────────────
-    public function sensorConfig()
+    public function sensorConfig(Request $request)
     {
-        $thresholds = SensorThreshold::all()->keyBy('key');
-        return view('admin.sensor-config', compact('thresholds'));
+        $devices = Device::all();
+        $selectedDevice = $request->device_id ? Device::find($request->device_id) : null;
+
+        $thresholds = SensorThreshold::when(
+            $selectedDevice,
+            fn($q) => $q->where('device_id', $selectedDevice->id),
+            fn($q) => $q->whereNull('device_id')
+        )->get()->keyBy('key');
+
+        return view('admin.sensor-config', compact('thresholds', 'devices', 'selectedDevice'));
     }
 
     public function updateSensorConfig(Request $request)
     {
         $request->validate([
+            'device_id'              => 'nullable|exists:devices,id',
             'turbidity_keruh'        => 'required|numeric|min:0',
             'turbidity_sangat_keruh' => 'required|numeric|min:0',
-            'rain_threshold'         => 'required|numeric|min:0',
+            'rain_threshold'         => 'required|integer|min:0|max:4095',
             'chlorine_amount_ml'     => 'required|numeric|min:0',
         ]);
 
-        foreach ($request->only('turbidity_keruh', 'turbidity_sangat_keruh', 'rain_threshold', 'chlorine_amount_ml') as $key => $value) {
-            SensorThreshold::where('key', $key)->update(['value' => $value]);
+        $deviceId = $request->device_id ?: null;
+        $keys = ['turbidity_keruh', 'turbidity_sangat_keruh', 'rain_threshold', 'chlorine_amount_ml'];
+
+        foreach ($keys as $key) {
+            SensorThreshold::updateOrCreate(
+                ['key' => $key, 'device_id' => $deviceId],
+                ['value' => $request->$key]
+            );
         }
 
-        return back()->with('success', 'Konfigurasi sensor berhasil disimpan.');
+        return back()->with('success', 'Konfigurasi berhasil disimpan.');
     }
 
     // ── Export CSV ─────────────────────────────────────────────────────────
