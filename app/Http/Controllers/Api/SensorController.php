@@ -51,7 +51,7 @@ class SensorController extends Controller
             $turbidityStatus = 'keruh';
         }
 
-        $rainDetected = $rainValue < $thRain;
+        $rainDetected = (bool) $request->rain_detected;
 
         // Update last_seen_at device
         $device->update(['last_seen_at' => now()]);
@@ -65,7 +65,13 @@ class SensorController extends Controller
             'rain_value'       => $rainValue,
             'esp32_online'     => true,
         ]);
-
+        $request->validate([
+            'device_id'       => 'required|string',
+            'turbidity_value' => 'required|numeric',
+            'rain_value'      => 'required|integer',
+            'rain_detected'   => 'required|boolean',   // tambahan
+            'esp32_online'    => 'required|boolean',
+        ]);
         // Log hujan: catat jika terdeteksi dan interval >= 5 menit
         $rainAction = false;
         if ($rainDetected) {
