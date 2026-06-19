@@ -75,40 +75,32 @@ class SensorController extends Controller
         // Log hujan: catat jika terdeteksi dan interval >= 5 menit
         $rainAction = false;
         if ($rainDetected) {
-            $lastRain = RainLog::where('device_id', $device->id)->latest()->first();
-
-            if (!$lastRain || $lastRain->created_at->diffInMinutes(now()) >= 5) {
-                RainLog::create([
-                    'device_id'    => $device->id,
-                    'rain_value'   => $rainValue,
-                    'cover_closed' => true,
-                    'notes'        => 'Penutup otomatis menutup karena hujan terdeteksi.',
-                ]);
-                $rainAction = true;
-            }
+            RainLog::create([
+                'device_id'    => $device->id,
+                'rain_value'   => $rainValue,
+                'cover_closed' => true,
+                'notes'        => 'Penutup otomatis menutup karena hujan terdeteksi.',
+            ]);
+            $rainAction = true;
         }
 
         // Log kaporit: catat jika keruh dan interval >= 30 menit
         $chlorineAction = false;
         if (in_array($turbidityStatus, ['keruh', 'sangat_keruh'])) {
-            $lastChlor = ChlorineLog::where('device_id', $device->id)->latest()->first();
-
-            if (!$lastChlor || $lastChlor->created_at->diffInMinutes(now()) >= 30) {
-                $amount = SensorThreshold::get('chlorine_amount_ml', 50);
-                if ($turbidityStatus === 'sangat_keruh') {
-                    $amount *= 1.5;
-                }
-
-                ChlorineLog::create([
-                    'device_id'          => $device->id,
-                    'turbidity_value'    => $turbidity,
-                    'turbidity_status'   => $turbidityStatus,
-                    'chlorine_added'     => true,
-                    'chlorine_amount_ml' => $amount,
-                    'notes'              => "Kaporit {$amount}ml ditambahkan otomatis.",
-                ]);
-                $chlorineAction = true;
+            $amount = SensorThreshold::get('chlorine_amount_ml', 50);
+            if ($turbidityStatus === 'sangat_keruh') {
+                $amount *= 1.5;
             }
+
+            ChlorineLog::create([
+                'device_id'          => $device->id,
+                'turbidity_value'    => $turbidity,
+                'turbidity_status'   => $turbidityStatus,
+                'chlorine_added'     => true,
+                'chlorine_amount_ml' => $amount,
+                'notes'              => "Kaporit {$amount}ml ditambahkan otomatis.",
+            ]);
+            $chlorineAction = true;
         }
 
         return response()->json([
