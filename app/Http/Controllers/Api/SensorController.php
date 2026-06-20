@@ -44,11 +44,12 @@ class SensorController extends Controller
         $thRain        = SensorThreshold::get('rain_threshold', 500);
 
         // Tentukan status kekeruhan
-        $turbidityStatus = 'jernih';
-        if ($turbidity >= $thSangatKeruh) {
-            $turbidityStatus = 'sangat_keruh';
-        } elseif ($turbidity >= $thKeruh) {
+        if ($turbidity >= $thKeruh) {
+            $turbidityStatus = 'jernih';
+        } elseif ($turbidity >= $thSangatKeruh) {
             $turbidityStatus = 'keruh';
+        } else {
+            $turbidityStatus = 'sangat_keruh';
         }
 
         $rainDetected = (bool) $request->rain_detected;
